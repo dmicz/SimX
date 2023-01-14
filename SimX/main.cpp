@@ -9,12 +9,15 @@ LRESULT CALLBACK mainProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
 	const wchar_t CLASS_NAME[] = L"PhysicsSim";
 
+	HICON hIcon;
+	hIcon = ExtractIcon(NULL, TEXT("simicon2.ico"), 0);
+
 	WNDCLASS wc = {};
 	wc.lpfnWndProc = mainProc;
 	wc.hInstance = hInstance;
 	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wc.lpszClassName = CLASS_NAME;
-
+	wc.hIcon = hIcon;
 	RegisterClass(&wc);
 
 	HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"SimX", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
