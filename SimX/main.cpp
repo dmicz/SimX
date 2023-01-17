@@ -3,8 +3,42 @@
 #endif
 
 #include <windows.h>
+#include <d2d1.h>
+
+#include "SimXApp.h"
+
+class SimXApp {
+public:
+	SimXApp();
+	~SimXApp();
+
+	HRESULT Initialize();
+
+	void RunMessageLoop();
+
+private:
+	HRESULT CreateDeviceIndependentResources();
+
+	HRESULT CreateDeviceResoruces();
+
+	void DiscardDeviceResources();
+
+	HRESULT OnRender();
+
+	void OnResize(UINT width, UINT height);
+
+	static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	HWND m_hwnd;
+	ID2D1Factory* m_pDirect2dFactory;
+	ID2D1HwndRenderTarget* m_pRenderTarget;
+	ID2D1SolidColorBrush* m_pBackgroundBrush;
+	ID2D1SolidColorBrush* m_pObjectBrush;
+};
 
 LRESULT CALLBACK mainProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
 	const wchar_t CLASS_NAME[] = L"PhysicsSim";
@@ -20,10 +54,42 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
 	wc.hIcon = hIcon;
 	RegisterClass(&wc);
 
-	HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"SimX", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
+	int nDefaultWidth = 640;
+	int nDefaultHeight = 480;
+
+
+	HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"SimX", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, nDefaultWidth, nDefaultHeight, NULL, NULL, hInstance, NULL);
 	if (hwnd == NULL) {
 		return 0;
 	}
+
+	ID2D1Factory* pD2DFactory = NULL;
+	HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
+
+	RECT rc;
+	GetClientRect(hwnd, &rc);
+
+	ID2D1HwndRenderTarget* pRT = NULL;
+	hr = pD2DFactory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(hwnd, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)), &pRT);
+
+	ID2D1SolidColorBrush* pBlackBrush = NULL;
+	if (SUCCEEDED(hr)) {
+		pRT->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBlackBrush);
+	}
+
+	pRT->BeginDraw();
+
+	pRT->DrawRectangle(D2D1::RectF(
+		rc.left + 100.0f,
+		rc.top + 100.0f,
+		rc.right - 100.0f,
+		rc.bottom - 100.0f),
+		pBlackBrush);
+
+	hr = pRT->EndDraw();
+
+	SafeRelease(&pRT);
+	SafeRelease(&pBlackBrush);
 
 	ShowWindow(hwnd, nCmdShow);
 
@@ -33,6 +99,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
+	SafeRelease(&pD2DFactory);
+
 
 	return 0;
 
@@ -47,13 +116,29 @@ LRESULT CALLBACK mainProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_PAINT:
 	{
 		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hWnd, &ps);
+		BeginPaint(hWnd, &ps);
 
-		FillRect(hdc, &ps.rcPaint, (HBRUSH)GetStockObject(BLACK_BRUSH));
+		RECT rc;
+		GetClientRect(hWnd, &rc);
+
+		HGDIOBJ original = NULL;
+		original = SelectObject(ps.hdc, GetStockObject(DC_PEN));
+
+		HPEN blackPen = CreatePen(PS_SOLID, 3, 0);
+
+		SelectObject(ps.hdc, blackPen);
+
+		Rectangle(ps.hdc, rc.left + 100, rc.top + 100, rc.right - 100, rc.bottom - 100);
+
+
+		DeleteObject(blackPen);
+
+		SelectObject(ps.hdc, original);
+		
 		EndPaint(hWnd, &ps);
 	}
 	return 0;
 	}
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
+}	
