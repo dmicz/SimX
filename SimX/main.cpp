@@ -2,12 +2,16 @@
 #include <stdio.h>
 
 #include "SimXApp.h"
+#include "physics.h"
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
 int main(int argc, char* args[]) {
 	SimXApp application("SimX");
+	PhysicsScene physics;
+
+	application.SetPhysicsHandler(&physics);
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("SDL couldn't initialize, SDL_Error: %s\n", SDL_GetError());
@@ -21,7 +25,8 @@ int main(int argc, char* args[]) {
 			printf("SDL couldn't create window, SDL_Error: %s\n", SDL_GetError());
 		}
 		else {
-
+			Block block(10);
+			physics.AddEntity(block);
 			SDL_Event e;
 			bool quit = false;
 			while (!quit) {

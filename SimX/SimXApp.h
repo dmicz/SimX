@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <stdio.h>
+#include "physics.h"
 
 class SimXApp {
 public:
@@ -9,10 +10,12 @@ public:
 
 	bool CreateWindow(int x, int y, int w, int h, Uint32 flags);
 	void RenderScene();
+	void SetPhysicsHandler(PhysicsScene* ps);
 private:
 	const char* _title;
 	SDL_Window* _window = NULL;
 	SDL_Renderer* _renderer = NULL;
 	int _screenWidth, _screenHeight;
 
+	PhysicsScene* _physicsSimulator;
 };

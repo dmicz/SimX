@@ -38,10 +38,18 @@ void SimXApp::RenderScene() {
 	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(_renderer);
 
+	for (int entityID = 0; entityID < _physicsSimulator->GetNumEntities(); entityID++) {
+
+	}
 	SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
 	int boxSize = 50;
 	SDL_Rect box = { (_screenWidth - boxSize) / 2, (_screenHeight - boxSize) / 2, boxSize, boxSize };
 	SDL_RenderDrawRect(_renderer, &box);
 
 	SDL_RenderPresent(_renderer);
+}
+
+void SimXApp::SetPhysicsHandler(PhysicsScene* ps)
+{
+	_physicsSimulator = ps;
 }
