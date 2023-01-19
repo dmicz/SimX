@@ -1,25 +1,26 @@
 #include <SDL.h>
 #include <stdio.h>
 
+#include "SimXApp.h"
+
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
 int main(int argc, char* args[]) {
-	SDL_Window* window = NULL;
-	SDL_Surface* screenSurface = NULL;
+	SimXApp application("SimX");
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("SDL couldn't initialize, SDL_Error: %s\n", SDL_GetError());
 	}
 	else {
-		window = SDL_CreateWindow("SimX", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (window == NULL) {
+		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
+			printf("Warning: Linear texture filtering not enabled!");
+		}
+
+		if (!application.CreateWindow(SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN)) {
 			printf("SDL couldn't create window, SDL_Error: %s\n", SDL_GetError());
 		}
 		else {
-			screenSurface = SDL_GetWindowSurface(window);
-			SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0x00, 0x00, 0x00));
-			SDL_UpdateWindowSurface(window);
 
 			SDL_Event e;
 			bool quit = false;
@@ -27,9 +28,9 @@ int main(int argc, char* args[]) {
 				while (SDL_PollEvent(&e)) {
 					if (e.type == SDL_QUIT) quit = true;
 				}
+				application.RenderScene();
 			}
 
-			SDL_DestroyWindow(window);
 			SDL_Quit();
 		}
 	}
