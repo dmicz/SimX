@@ -2,30 +2,27 @@
 #include <vector>
 #include <SDL.h>
 
-class Entity;
 class Block;
 
 class PhysicsScene {
 public:
-	void AddEntity(Entity x);
+	void AddBlock(Block x);
 
-	int GetNumEntities();
-	Entity* GetEntity(int id);
+	int GetNumBlocks();
+	Block* GetBlock(int id);
+
+	void simulationTick();
+	void runForTicks();
 private:
-	std::vector<Entity> _entities;
+	std::vector<Block> _blocks;
 };
 
-class Entity {
+class Block {
 public:
+	Block(int x, int y, int size) : _xPosition(x), _yPosition(y), _size(size) {};
 	void SetPosition(int x, int y);
-	SDL_Rect GetBounds();
+	SDL_Rect* GetBounds();
 private:
 	int _xPosition, _yPosition;
-};
-
-class Block : public Entity {
-public:
-	Block(int size) : _size(size) {};
-private:
 	int _size;
 };

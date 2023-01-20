@@ -25,13 +25,18 @@ int main(int argc, char* args[]) {
 			printf("SDL couldn't create window, SDL_Error: %s\n", SDL_GetError());
 		}
 		else {
-			Block block(10);
-			physics.AddEntity(block);
+			Block block(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 50);
+			physics.AddBlock(block);
 			SDL_Event e;
 			bool quit = false;
 			while (!quit) {
 				while (SDL_PollEvent(&e)) {
 					if (e.type == SDL_QUIT) quit = true;
+					if (e.type == SDL_MOUSEBUTTONDOWN) {
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						application.MouseDown(mouseX, mouseY);
+					}
 				}
 				application.RenderScene();
 			}

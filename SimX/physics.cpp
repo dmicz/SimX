@@ -1,29 +1,33 @@
 #include "physics.h"
+#include <algorithm>
 
-void PhysicsScene::AddEntity(Entity x)
+void PhysicsScene::AddBlock(Block x)
 {
-	_entities.push_back(x);
+	for (int i = 0; i < _blocks.size(); i++) {
+		if(x.GetBounds())
+	}
+	_blocks.push_back(x);
 }
 
-int PhysicsScene::GetNumEntities()
+int PhysicsScene::GetNumBlocks()
 {
-	return _entities.size();
+	return _blocks.size();
 }
 
-Entity* PhysicsScene::GetEntity(int id)
+Block* PhysicsScene::GetBlock(int id)
 {
-	if (id < 0 || id > _entities.size()) return nullptr;
-	return &_entities[id];
+	if (id < 0 || id > _blocks.size()) return nullptr;
+	return &_blocks[id];
 }
 
-void Entity::SetPosition(int x, int y)
+void Block::SetPosition(int x, int y)
 {
-	_xPosition = x;
-	_yPosition = y;
+	_xPosition = std::max(0, x);
+	_xPosition = std::max(0, y);
 }
 
-SDL_Rect Entity::GetBounds()
+SDL_Rect* Block::GetBounds()
 {
-	SDL_Rect bounds = { _xPosition, _yPosition, }
-	return ;
+	SDL_Rect bounds = { _xPosition, _yPosition, _size, _size };
+	return &bounds;
 }
