@@ -23,6 +23,8 @@ bool PhysicsScene::AddBlock(Block x)
 			return false;
 		}
 	}
+	x.velocity = Vector(0.0, 0.0);
+	x.force = Vector(0.0, GRAVITY_FORCE);
 	_blocks.push_back(x);
 	return true;
 }
@@ -43,9 +45,13 @@ int PhysicsScene::GetFloorHeight()
 	return _floorY;
 }
 
-void PhysicsScene::RunForSeconds(int secondsToRun, int deltaTSeconds)
+void PhysicsScene::RunForSeconds(int secondsToRun, double deltaTSeconds)
 {
-
+	for (int i = 0; i < _blocks.size(); i++) {
+		_blocks[i].velocity += _blocks[i].force * deltaTSeconds;
+		_blocks[i].x -= _blocks[i].velocity.x;
+		_blocks[i].y -= _blocks[i].velocity.y;
+	}
 }
 
 
@@ -55,12 +61,28 @@ SDL_Rect* Block::GetSDLRect()
 	return &bounds;
 }
 
-double Force::GetMagnitude()
+double Vector::GetMagnitude()
 {
 	return std::sqrt(x * y);
 }
 
-double Force::GetAngleDeg()
+double Vector::GetAngleDeg()
 {
 	return std::atan(x/y) / 180 * std::numbers::pi;
+}
+
+Vector Vector::operator+(Vector a)
+{
+	return Vector(x + a.x, y + a.y);
+}
+
+void Vector::operator+=(Vector a)
+{
+	x += a.x;
+	y += a.y;
+}
+
+Vector Vector::operator*(double a)
+{
+	return Vector(x * a, y * a);
 }

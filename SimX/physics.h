@@ -9,7 +9,7 @@ struct Force;
 
 class PhysicsScene {
 public:
-	PhysicsScene(int xMax, int yMax, int floorHeight) : 
+	PhysicsScene(int xMax, int yMax, int floorHeight) :
 		_xMax(xMax), _yMax(yMax), _floorY(yMax - floorHeight) {};
 	bool AddBlock(Block x);
 
@@ -18,22 +18,26 @@ public:
 
 	int GetFloorHeight();
 
-	void RunForSeconds(int secondsToRun, int deltaTSeconds);
+	void RunForSeconds(int secondsToRun, double deltaTSeconds);
 private:
 	std::vector<Block> _blocks;
 	int _floorY;
 	int _xMax, _yMax;
 };
 
-struct Force {
+struct Vector {
 	double x, y;
 	double GetMagnitude();
 	double GetAngleDeg();
+	Vector operator+(Vector a);
+	void operator+=(Vector a);
+	Vector operator*(double a);
 };
 
 struct Block {
 	SDL_Rect* GetSDLRect();
 	double x, y;
 	int size;
-	Force force;
+	Vector velocity;
+	Vector force;
 };
