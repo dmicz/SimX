@@ -27,7 +27,7 @@ bool PhysicsScene::AddBlock(Block x)
 
 int PhysicsScene::GetNumBlocks()
 {
-	return _blocks.size();
+	return static_cast<int>(_blocks.size());
 }
 
 Block* PhysicsScene::GetBlock(int id)
@@ -44,7 +44,7 @@ void PhysicsScene::RunForSeconds(int secondsToRun, int deltaTSeconds)
 
 SDL_Rect* Block::GetSDLRect()
 {
-	SDL_Rect bounds = { x, y, size, size };
+	SDL_Rect bounds = { static_cast<int>(x), static_cast<int>(y), size, size };
 	return &bounds;
 }
 
