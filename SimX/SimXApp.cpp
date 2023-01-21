@@ -41,8 +41,11 @@ void SimXApp::RenderScene() {
 	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(_renderer);
 
-
+	// Render Floor
 	SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLine(_renderer, 0, _physicsSimulator->GetFloorHeight(), _screenWidth, _physicsSimulator->GetFloorHeight());
+
+	// Render blocks
 	for (int blockID = 0; blockID < _physicsSimulator->GetNumBlocks(); blockID++) {
 		SDL_RenderDrawRect(_renderer, _physicsSimulator->GetBlock(blockID)->GetSDLRect());
 	}

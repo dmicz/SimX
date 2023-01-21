@@ -8,12 +8,14 @@ bool PhysicsScene::AddBlock(Block x)
 	for (int i = 0; i < _blocks.size(); i++) {
 		bool xCollide = false, yCollide = false;
 		if ((x.x > _blocks[i].x && x.x < (_blocks[i].x + _blocks[i].size)) ||
-			((x.x + x.size) > _blocks[i].x && (x.x + x.size) < (_blocks[i].x + _blocks[i].size))) {
+			((x.x + x.size) > _blocks[i].x && (x.x + x.size) < (_blocks[i].x + _blocks[i].size)) ||
+			(x.size == _blocks[i].size && x.x == _blocks[i].x)) {
 			xCollide = true;
 		}
 
 		if ((x.y > _blocks[i].y && x.y < (_blocks[i].y + _blocks[i].size)) ||
-			((x.y + x.size) > _blocks[i].x && (x.y + x.size) < (_blocks[i].y + _blocks[i].size))) {
+			((x.y + x.size) > _blocks[i].y && (x.y + x.size) < (_blocks[i].y + _blocks[i].size)) || 
+				(x.size == _blocks[i].size && x.y == _blocks[i].y)) {
 			yCollide = true;
 		}
 
@@ -34,6 +36,11 @@ Block* PhysicsScene::GetBlock(int id)
 {
 	if (id < 0 || id > _blocks.size()) return nullptr;
 	return &_blocks[id];
+}
+
+int PhysicsScene::GetFloorHeight()
+{
+	return _floorY;
 }
 
 void PhysicsScene::RunForSeconds(int secondsToRun, int deltaTSeconds)

@@ -9,7 +9,7 @@ const int SCREEN_HEIGHT = 480;
 
 int main(int argc, char* args[]) {
 	SimXApp application("SimX");
-	PhysicsScene physics;
+	PhysicsScene physics(SCREEN_WIDTH, SCREEN_HEIGHT, 100);
 
 	application.SetPhysicsHandler(&physics);
 
