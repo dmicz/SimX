@@ -6,6 +6,8 @@
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
+const int SCREEN_FPS = 60;
+const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
 int main(int argc, char* args[]) {
 	SimXApp application("SimX");
@@ -28,8 +30,18 @@ int main(int argc, char* args[]) {
 			Block block = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50 };
 			physics.AddBlock(block);
 			SDL_Event e;
+			
+			Uint32 fpsStartTicks = 0;
+			Uint32 capStartTicks = 0;
+			
+			int countedFrames = 0;
+			fpsStartTicks = SDL_GetTicks();
+
 			bool quit = false;
+
 			while (!quit) {
+				capStartTicks = SDL_GetTicks();
+
 				while (SDL_PollEvent(&e)) {
 					if (e.type == SDL_QUIT) quit = true;
 					if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -38,7 +50,17 @@ int main(int argc, char* args[]) {
 						application.MouseDown(mouseX, mouseY);
 					}
 				}
+
+				float avgFPS = countedFrames / ((SDL_GetTicks() - fpsStartTicks) / 1000.f);
+				if (avgFPS > 2000000) avgFPS = 0;
+
 				application.RenderScene();
+
+				countedFrames++;
+				int frameTicks = (SDL_GetTicks() - capStartTicks);
+				if (frameTicks < SCREEN_TICKS_PER_FRAME) {
+					SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTicks);
+				}
 			}
 
 			SDL_Quit();
