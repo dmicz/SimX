@@ -25,7 +25,7 @@ int main(int argc, char* args[]) {
 			printf("SDL couldn't create window, SDL_Error: %s\n", SDL_GetError());
 		}
 		else {
-			Block block(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 50);
+			Block block = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50 };
 			physics.AddBlock(block);
 			SDL_Event e;
 			bool quit = false;

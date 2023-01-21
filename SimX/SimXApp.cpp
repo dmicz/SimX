@@ -44,7 +44,7 @@ void SimXApp::RenderScene() {
 
 	SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
 	for (int blockID = 0; blockID < _physicsSimulator->GetNumBlocks(); blockID++) {
-		SDL_RenderDrawRect(_renderer, _physicsSimulator->GetBlock(blockID)->GetBounds());
+		SDL_RenderDrawRect(_renderer, _physicsSimulator->GetBlock(blockID)->GetSDLRect());
 	}
 	
 	SDL_RenderPresent(_renderer);

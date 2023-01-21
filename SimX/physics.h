@@ -2,27 +2,28 @@
 #include <vector>
 #include <SDL.h>
 
-class Block;
+struct Block;
 
 class PhysicsScene {
 public:
-	void AddBlock(Block x);
+	bool AddBlock(Block x);
 
 	int GetNumBlocks();
 	Block* GetBlock(int id);
 
-	void simulationTick();
-	void runForTicks();
+	void RunForSeconds(int secondsToRun, int deltaTSeconds);
 private:
 	std::vector<Block> _blocks;
 };
 
-class Block {
-public:
-	Block(int x, int y, int size) : _xPosition(x), _yPosition(y), _size(size) {};
-	void SetPosition(int x, int y);
-	SDL_Rect* GetBounds();
-private:
-	int _xPosition, _yPosition;
-	int _size;
+struct Block {
+	SDL_Rect* GetSDLRect();
+	double x, y;
+	int size;
+};
+
+struct Force {
+	double x, y;
+	double GetMagnitude();
+	double GetAngleDeg();
 };

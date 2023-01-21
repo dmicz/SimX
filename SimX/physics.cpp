@@ -1,12 +1,28 @@
 #include "physics.h"
 #include <algorithm>
+#include <cmath>
+#include <numbers>
 
-void PhysicsScene::AddBlock(Block x)
+bool PhysicsScene::AddBlock(Block x)
 {
 	for (int i = 0; i < _blocks.size(); i++) {
-		if(x.GetBounds())
+		bool xCollide = false, yCollide = false;
+		if ((x.x > _blocks[i].x && x.x < (_blocks[i].x + _blocks[i].size)) ||
+			((x.x + x.size) > _blocks[i].x && (x.x + x.size) < (_blocks[i].x + _blocks[i].size))) {
+			xCollide = true;
+		}
+
+		if ((x.y > _blocks[i].y && x.y < (_blocks[i].y + _blocks[i].size)) ||
+			((x.y + x.size) > _blocks[i].x && (x.y + x.size) < (_blocks[i].y + _blocks[i].size))) {
+			yCollide = true;
+		}
+
+		if (xCollide && yCollide) {
+			return false;
+		}
 	}
 	_blocks.push_back(x);
+	return true;
 }
 
 int PhysicsScene::GetNumBlocks()
@@ -20,14 +36,24 @@ Block* PhysicsScene::GetBlock(int id)
 	return &_blocks[id];
 }
 
-void Block::SetPosition(int x, int y)
+void PhysicsScene::RunForSeconds(int secondsToRun, int deltaTSeconds)
 {
-	_xPosition = std::max(0, x);
-	_xPosition = std::max(0, y);
+
 }
 
-SDL_Rect* Block::GetBounds()
+
+SDL_Rect* Block::GetSDLRect()
 {
-	SDL_Rect bounds = { _xPosition, _yPosition, _size, _size };
+	SDL_Rect bounds = { x, y, size, size };
 	return &bounds;
+}
+
+double Force::GetMagnitude()
+{
+	return std::sqrt(x * y);
+}
+
+double Force::GetAngleDeg()
+{
+	return std::atan(x/y) / 180 * std::numbers::pi;
 }
