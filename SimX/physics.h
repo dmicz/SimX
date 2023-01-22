@@ -18,7 +18,7 @@ public:
 
 	int GetFloorHeight();
 
-	void RunForSeconds(int secondsToRun, double deltaTSeconds);
+	void RunForSeconds(double secondsToRun, double deltaTSeconds);
 private:
 	std::vector<Block> _blocks;
 	int _floorY;

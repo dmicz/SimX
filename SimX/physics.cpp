@@ -14,8 +14,8 @@ bool PhysicsScene::AddBlock(Block x)
 		}
 
 		if ((x.y > _blocks[i].y && x.y < (_blocks[i].y + _blocks[i].size)) ||
-			((x.y + x.size) > _blocks[i].y && (x.y + x.size) < (_blocks[i].y + _blocks[i].size)) || 
-				(x.size == _blocks[i].size && x.y == _blocks[i].y)) {
+			((x.y + x.size) > _blocks[i].y && (x.y + x.size) < (_blocks[i].y + _blocks[i].size)) ||
+			(x.size == _blocks[i].size && x.y == _blocks[i].y)) {
 			yCollide = true;
 		}
 
@@ -45,14 +45,16 @@ int PhysicsScene::GetFloorHeight()
 	return _floorY;
 }
 
-void PhysicsScene::RunForSeconds(int secondsToRun, double deltaTSeconds)
+void PhysicsScene::RunForSeconds(double secondsToRun, double deltaTSeconds)
 {
-	for (int i = 0; i < _blocks.size(); i++) {
-		_blocks[i].velocity += _blocks[i].force * deltaTSeconds;
-		_blocks[i].x -= _blocks[i].velocity.x;
-		_blocks[i].y -= _blocks[i].velocity.y;
-		_blocks[i].x = std::max(0.0, std::min(static_cast<double>(_xMax) - _blocks[i].size, _blocks[i].x));
-		_blocks[i].y = std::min(static_cast<double>(_floorY) - _blocks[i].size, _blocks[i].y);
+	for (int s = 0; s < secondsToRun / deltaTSeconds; s++) {
+		for (int i = 0; i < _blocks.size(); i++) {
+			_blocks[i].velocity += _blocks[i].force * deltaTSeconds;
+			_blocks[i].x -= _blocks[i].velocity.x;
+			_blocks[i].y -= _blocks[i].velocity.y;
+			_blocks[i].x = std::max(0.0, std::min(static_cast<double>(_xMax) - _blocks[i].size, _blocks[i].x));
+			_blocks[i].y = std::min(static_cast<double>(_floorY) - _blocks[i].size, _blocks[i].y);
+		}
 	}
 }
 
@@ -70,7 +72,7 @@ double Vector::GetMagnitude()
 
 double Vector::GetAngleDeg()
 {
-	return std::atan(x/y) / 180 * std::numbers::pi;
+	return std::atan(x / y) / 180 * std::numbers::pi;
 }
 
 Vector Vector::operator+(Vector a)

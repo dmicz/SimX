@@ -6,6 +6,8 @@ SimXApp::SimXApp(const char* title)
 	_screenHeight = NULL;
 	_physicsSimulator = NULL;
 	_title = title;
+	_mouseX = 0;
+	_mouseY = 0;
 }
 
 SimXApp::~SimXApp()
@@ -41,6 +43,11 @@ void SimXApp::RenderScene() {
 	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(_renderer);
 
+	// Render block placement preview
+	SDL_SetRenderDrawColor(_renderer, 0x88, 0x88, 0x88, SDL_ALPHA_OPAQUE);
+	SDL_Rect preview = { _mouseX, _mouseY, 50, 50 };
+	SDL_RenderDrawRect(_renderer, &preview);
+
 	// Render Floor
 	SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(_renderer, 0, _physicsSimulator->GetFloorHeight(), _screenWidth, _physicsSimulator->GetFloorHeight());
@@ -49,8 +56,8 @@ void SimXApp::RenderScene() {
 	for (int blockID = 0; blockID < _physicsSimulator->GetNumBlocks(); blockID++) {
 		SDL_RenderDrawRect(_renderer, _physicsSimulator->GetBlock(blockID)->GetSDLRect());
 	}
-	_physicsSimulator->RunForSeconds(0, 1./60);
-	
+	_physicsSimulator->RunForSeconds(1./ 60, 1. / 1000);
+
 	SDL_RenderPresent(_renderer);
 }
 
@@ -59,7 +66,9 @@ void SimXApp::SetPhysicsHandler(PhysicsScene* ps)
 	_physicsSimulator = ps;
 }
 
-void SimXApp::MouseDown(int x, int y)
+void SimXApp::MouseMove(int x, int y, bool mouseDown)
 {
-	_physicsSimulator->AddBlock(Block(x, y, 50));
+	_mouseX = x;
+	_mouseY = y;
+	if (mouseDown) _physicsSimulator->AddBlock(Block(x, y, 50));
 }

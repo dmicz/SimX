@@ -47,7 +47,12 @@ int main(int argc, char* args[]) {
 					if (e.type == SDL_MOUSEBUTTONDOWN) {
 						int mouseX, mouseY;
 						SDL_GetMouseState(&mouseX, &mouseY);
-						application.MouseDown(mouseX, mouseY);
+						application.MouseMove(mouseX, mouseY, true);
+					}
+					if (e.type == SDL_MOUSEMOTION) {
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						application.MouseMove(mouseX, mouseY, false);
 					}
 				}
 
