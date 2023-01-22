@@ -2,7 +2,7 @@
 #include <vector>
 #include <SDL.h>
 
-const double GRAVITY_FORCE = -9.80665;
+const double GRAVITY_FORCE = -9.8;
 
 struct Block;
 struct Force;

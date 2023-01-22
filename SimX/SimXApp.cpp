@@ -56,7 +56,7 @@ void SimXApp::RenderScene() {
 	for (int blockID = 0; blockID < _physicsSimulator->GetNumBlocks(); blockID++) {
 		SDL_RenderDrawRect(_renderer, _physicsSimulator->GetBlock(blockID)->GetSDLRect());
 	}
-	_physicsSimulator->RunForSeconds(1./ 60, 1. / 1000);
+	_physicsSimulator->RunForSeconds(1./ 60, 1. / 6000);
 
 	SDL_RenderPresent(_renderer);
 }
