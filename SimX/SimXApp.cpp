@@ -1,4 +1,6 @@
 #include "SimXApp.h"
+#include <SDL.h>
+#include <SDL_image.h>
 
 SimXApp::SimXApp(const char* title)
 {
@@ -28,12 +30,24 @@ bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
 		success = false;
 	}
 	else {
-		_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-		if (_renderer == NULL) {
-			printf("Renderer not created, SDL error: %s\n", SDL_GetError());
+		int imgFlags = IMG_INIT_PNG;
+		if (!(IMG_Init(imgFlags) & imgFlags))
+		{
+			printf("SDL_image not initialized, SDL_image Error: %s\n", IMG_GetError());
+			success = false;
 		}
-		else {
-			SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+		else
+		{
+			SDL_Surface* icon = IMG_Load("simicon.ico");
+			SDL_SetWindowIcon(_window, icon);
+			_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+			if (_renderer == NULL) {
+				printf("Renderer not created, SDL error: %s\n", SDL_GetError());
+				success = false;
+			}
+			else {
+				SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+			}
 		}
 	}
 	return success;
@@ -43,8 +57,17 @@ void SimXApp::RenderScene() {
 	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(_renderer);
 
+	//Draw Grid
+	SDL_SetRenderDrawColor(_renderer, 0x11, 0x11, 0x11, SDL_ALPHA_OPAQUE);
+	for (int i = 0; i < _screenWidth; i += 20) {
+		SDL_RenderDrawLine(_renderer, i, 0, i, _physicsSimulator->GetFloorHeight());
+	}
+	for (int i = 0; i < _physicsSimulator->GetFloorHeight(); i += 20) {
+		SDL_RenderDrawLine(_renderer, 0, i, _screenWidth, i);
+	}
+
 	// Render block placement preview
-	SDL_SetRenderDrawColor(_renderer, 0x88, 0x88, 0x88, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(_renderer, 0x99, 0x99, 0x99, SDL_ALPHA_OPAQUE);
 	SDL_Rect preview = { _mouseX, _mouseY, 50, 50 };
 	SDL_RenderDrawRect(_renderer, &preview);
 
@@ -56,7 +79,7 @@ void SimXApp::RenderScene() {
 	for (int blockID = 0; blockID < _physicsSimulator->GetNumBlocks(); blockID++) {
 		SDL_RenderDrawRect(_renderer, _physicsSimulator->GetBlock(blockID)->GetSDLRect());
 	}
-	_physicsSimulator->RunForSeconds(1./ 60, 1. / 6000);
+	_physicsSimulator->RunForSeconds(1. / 60, 1. / 6000);
 
 	SDL_RenderPresent(_renderer);
 }

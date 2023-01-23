@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <stdio.h>
+#include <SDL_image.h>
 
 #include "SimXApp.h"
 #include "physics.h"

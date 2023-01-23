@@ -54,6 +54,13 @@ void PhysicsScene::RunForSeconds(double secondsToRun, double deltaTSeconds)
 			_blocks[i].y -= _blocks[i].velocity.y * deltaTSeconds;
 			_blocks[i].x = std::max(0.0, std::min(static_cast<double>(_xMax) - _blocks[i].size, _blocks[i].x));
 			_blocks[i].y = std::min(static_cast<double>(_floorY) - _blocks[i].size, _blocks[i].y);
+			for (int j = 0; j < _blocks.size(); j++) {
+				if (i != j) {
+					if ((_blocks[i].x + _blocks[i].size) > _blocks[j].x && _blocks[i].x < (_blocks[j].x + _blocks[j].size) && _blocks[i].y < _blocks[j].y && (_blocks[i].y + _blocks[i].size) >= _blocks[j].y) {
+						_blocks[i].y = _blocks[j].y - _blocks[i].size;
+					}
+				}
+			}
 		}
 	}
 }
