@@ -5,16 +5,13 @@
 #include "SimXApp.h"
 #include "physics.h"
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
 const int SCREEN_FPS = 60;
 const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
 int main(int argc, char* args[]) {
 	SimXApp application("SimX");
-	PhysicsScene physics(SCREEN_WIDTH, SCREEN_HEIGHT, 100);
-
-	application.SetPhysicsHandler(&physics);
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("SDL couldn't initialize, SDL_Error: %s\n", SDL_GetError());
@@ -28,8 +25,6 @@ int main(int argc, char* args[]) {
 			printf("SDL couldn't create window, SDL_Error: %s\n", SDL_GetError());
 		}
 		else {
-			Block block = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50 };
-			physics.AddBlock(block);
 			SDL_Event e;
 			
 			Uint32 fpsStartTicks = 0;
