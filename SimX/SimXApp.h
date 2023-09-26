@@ -10,8 +10,8 @@ public:
 	~SimXApp();
 
 	bool CreateWindow(int x, int y, int w, int h, Uint32 flags);
+	bool HandleEvent(SDL_Event e);
 	void RenderScene();
-	void MouseMove(int x, int y, bool mouseDown);
 private:
 	const char* _title;
 	SDL_Window* _window = NULL;
@@ -19,4 +19,6 @@ private:
 	TTF_Font* _font;
 	int _screenWidth, _screenHeight;
 	int _mouseX, _mouseY;
+
+	ParticleSimulation* _particleSim;
 };

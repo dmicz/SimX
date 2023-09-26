@@ -11,6 +11,8 @@ SimXApp::SimXApp(const char* title)
 	_title = title;
 	_mouseX = 0;
 	_mouseY = 0;
+
+	_particleSim = new ParticleSimulation(60);
 }
 
 SimXApp::~SimXApp()
@@ -48,7 +50,7 @@ bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
 			else {
 				SDL_Surface* icon = IMG_Load("simicon.ico");
 				SDL_SetWindowIcon(_window, icon);
-				_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+				_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 				if (_renderer == NULL) {
 					printf("Renderer not created, SDL error: %s\n", SDL_GetError());
 					success = false;
@@ -66,6 +68,22 @@ bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
 	}
 	return success;
 }
+
+bool SimXApp::HandleEvent(SDL_Event e)
+{
+	if (e.type == SDL_QUIT) return false;
+
+	if (e.type == SDL_MOUSEBUTTONDOWN) {
+		SDL_GetMouseState(&_mouseX, &_mouseY);
+	}
+	if (e.type == SDL_MOUSEMOTION) {
+		SDL_GetMouseState(&_mouseX, &_mouseY);
+	}
+
+	return true;
+}
+
+
 
 void SimXApp::RenderScene() {
 	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
@@ -86,17 +104,21 @@ void SimXApp::RenderScene() {
 	SDL_SetRenderDrawColor(_renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(_renderer, 0, toolbarHeight, _screenWidth, toolbarHeight);
 
-	int initialOffset = 10, tabWidth = 200, tabHeight = 50, cornerRadius = 10;
+	int initialOffset = 10, tabWidth = 200, tabHeight = 50, cornerRadius = 5;
 
 	SDL_Surface* textSurface = TTF_RenderText_Blended(_font, "Particle", SDL_Color(0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE));
 	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(_renderer, textSurface);
 	int textWidth = textSurface->w;
 	int textHeight = textSurface->h;
-	SDL_Rect renderQuad = { initialOffset + 10, toolbarHeight - (10 + textHeight), textWidth, textHeight };
+	int textPadding = 10;
+	SDL_Rect renderQuad = { initialOffset + textPadding, 
+							toolbarHeight - (textPadding + textHeight), 
+							textWidth, textHeight };
 	SDL_RenderCopy(_renderer, textTexture, NULL, &renderQuad);
 
 	tabWidth = textWidth + 20;
 	tabHeight = textHeight + 20;
+
 
 	SDL_RenderDrawLine(_renderer, initialOffset, toolbarHeight, initialOffset, toolbarHeight - (tabHeight - cornerRadius));
 	SDL_RenderDrawLine(_renderer, tabWidth + initialOffset, toolbarHeight, tabWidth + initialOffset, toolbarHeight - (tabHeight - cornerRadius));
@@ -107,20 +129,11 @@ void SimXApp::RenderScene() {
 
 	SDL_FreeSurface(textSurface);
 	SDL_DestroyTexture(textTexture);
-	
 
-	// Render block placement preview
-	SDL_SetRenderDrawColor(_renderer, 0x99, 0x99, 0x99, SDL_ALPHA_OPAQUE);
-	SDL_Rect preview = { _mouseX, _mouseY, 50, 50 };
-	SDL_RenderDrawRect(_renderer, &preview);
+	// Simulation
+
+
 
 
 	SDL_RenderPresent(_renderer);
-}
-
-
-void SimXApp::MouseMove(int x, int y, bool mouseDown)
-{
-	_mouseX = x;
-	_mouseY = y;
 }

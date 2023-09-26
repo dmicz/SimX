@@ -7,8 +7,8 @@
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
-const int SCREEN_FPS = 60;
-const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
+const int SIMULATION_APS = 100;
+const int SCREEN_TICKS_PER_FRAME = 1000 / SIMULATION_APS;
 
 int main(int argc, char* args[]) {
 	SimXApp application("SimX");
@@ -39,17 +39,7 @@ int main(int argc, char* args[]) {
 				capStartTicks = SDL_GetTicks();
 
 				while (SDL_PollEvent(&e)) {
-					if (e.type == SDL_QUIT) quit = true;
-					if (e.type == SDL_MOUSEBUTTONDOWN) {
-						int mouseX, mouseY;
-						SDL_GetMouseState(&mouseX, &mouseY);
-						application.MouseMove(mouseX, mouseY, true);
-					}
-					if (e.type == SDL_MOUSEMOTION) {
-						int mouseX, mouseY;
-						SDL_GetMouseState(&mouseX, &mouseY);
-						application.MouseMove(mouseX, mouseY, false);
-					}
+					quit = !application.HandleEvent(e);
 				}
 
 				float avgFPS = countedFrames / ((SDL_GetTicks() - fpsStartTicks) / 1000.f);
