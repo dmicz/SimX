@@ -23,7 +23,7 @@ void ParticleSimulation::addParticle(Particle particle) {
 	_particles.push_back(particle);
 }
 
-std::vector<Vector2D> ParticleSimulation::getParticlePositions() {
+void ParticleSimulation::getParticlePositions() {
 	std::vector<Vector2D> positions;
 	for (int i = 0; i < _particles.size(); i++) {
 		positions.push_back(_particles[i].position);

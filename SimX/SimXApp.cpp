@@ -3,7 +3,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-SimXApp::SimXApp(const char* title)
+SimXApp::SimXApp(const char* title) : _particleSim(60)
 {
 	_screenWidth = NULL;
 	_screenHeight = NULL;
@@ -11,8 +11,6 @@ SimXApp::SimXApp(const char* title)
 	_title = title;
 	_mouseX = 0;
 	_mouseY = 0;
-
-	_particleSim = new ParticleSimulation(60);
 }
 
 SimXApp::~SimXApp()
@@ -21,6 +19,26 @@ SimXApp::~SimXApp()
 
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_window);
+}
+
+void SimXApp::Run()
+{
+	_fpsStartTicks = SDL_GetTicks();
+
+	bool quit = false;
+
+	while (!quit) {
+		StartFrame();
+
+		quit = !HandleEvents();
+
+		RenderScene();
+
+		EndFrame();
+	}
+	while (!quit) {
+
+	}
 }
 
 bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
@@ -69,15 +87,22 @@ bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
 	return success;
 }
 
-bool SimXApp::HandleEvent(SDL_Event e)
+void SimXApp::StartFrame()
 {
-	if (e.type == SDL_QUIT) return false;
+	_capStartTicks = SDL_GetTicks();
+}
 
-	if (e.type == SDL_MOUSEBUTTONDOWN) {
-		SDL_GetMouseState(&_mouseX, &_mouseY);
-	}
-	if (e.type == SDL_MOUSEMOTION) {
-		SDL_GetMouseState(&_mouseX, &_mouseY);
+bool SimXApp::HandleEvents()
+{
+	while (SDL_PollEvent(&_event)) {
+		if (_event.type == SDL_QUIT) return false;
+
+		if (_event.type == SDL_MOUSEBUTTONDOWN) {
+			SDL_GetMouseState(&_mouseX, &_mouseY);
+		}
+		if (_event.type == SDL_MOUSEMOTION) {
+			SDL_GetMouseState(&_mouseX, &_mouseY);
+		}
 	}
 
 	return true;
@@ -111,8 +136,8 @@ void SimXApp::RenderScene() {
 	int textWidth = textSurface->w;
 	int textHeight = textSurface->h;
 	int textPadding = 10;
-	SDL_Rect renderQuad = { initialOffset + textPadding, 
-							toolbarHeight - (textPadding + textHeight), 
+	SDL_Rect renderQuad = { initialOffset + textPadding,
+							toolbarHeight - (textPadding + textHeight),
 							textWidth, textHeight };
 	SDL_RenderCopy(_renderer, textTexture, NULL, &renderQuad);
 
@@ -136,4 +161,16 @@ void SimXApp::RenderScene() {
 
 
 	SDL_RenderPresent(_renderer);
+}
+
+void SimXApp::EndFrame()
+{
+	_avgFramesPerSecond = _framesElapsed / ((SDL_GetTicks() - _fpsStartTicks) / 1000.f);
+	if (_avgFramesPerSecond > 2000000) _avgFramesPerSecond = 0;
+
+	_framesElapsed++;
+	int frameTicks = (SDL_GetTicks() - _capStartTicks);
+	if (frameTicks < 10) {
+		SDL_Delay(10 - frameTicks);
+	}
 }
