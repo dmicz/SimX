@@ -23,16 +23,27 @@ void ParticleSimulation::addParticle(Particle particle) {
 	m_particles.push_back(particle);
 }
 
-void ParticleSimulation::getParticlePositions() {
+int ParticleSimulation::numberOfParticles()
+{
+	return m_particles.size();
+}
+
+void ParticleSimulation::setParticleVelocity(int index, Vector2D velocity)
+{
+	m_particles[index].velocity = velocity;
+}
+
+std::vector<Vector2D> ParticleSimulation::getParticlePositions() {
 	std::vector<Vector2D> positions;
 	for (int i = 0; i < m_particles.size(); i++) {
 		positions.push_back(m_particles[i].position);
 	}
+	return positions;
 }
 
 double Vector2D::GetMagnitude()
 {
-	return std::sqrt(x * y);
+	return std::sqrt(x * x + y * y);
 }
 
 double Vector2D::GetAngleDeg()
@@ -49,6 +60,17 @@ void Vector2D::operator+=(Vector2D a)
 {
 	x += a.x;
 	y += a.y;
+}
+
+Vector2D Vector2D::operator-(Vector2D a)
+{
+	return Vector2D(x - a.x, y - a.y);
+}
+
+void Vector2D::operator-=(Vector2D a)
+{
+	x -= a.x;
+	y -= a.y;
 }
 
 Vector2D Vector2D::operator*(double a)

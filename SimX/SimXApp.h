@@ -20,6 +20,8 @@ private:
 	void RenderScene();
 	void EndFrame();
 
+	Vector2D SimulationToRenderSpace(Vector2D simulationPoint);
+
 	const char* m_title;
 	SDL_Window* m_window = NULL;
 	SDL_Event m_event;

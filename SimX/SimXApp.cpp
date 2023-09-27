@@ -3,7 +3,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-SimXApp::SimXApp(const char* title) : m_particleSim(60)
+SimXApp::SimXApp(const char* title) : m_particleSim(TICKS_PER_SECOND)
 {
 	m_screenWidth = NULL;
 	m_screenHeight = NULL;
@@ -69,7 +69,7 @@ bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
 			else {
 				SDL_Surface* icon = IMG_Load("simicon.ico");
 				SDL_SetWindowIcon(m_window, icon);
-				m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+				m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
 				if (m_renderer == NULL) {
 					printf("Renderer not created, SDL error: %s\n", SDL_GetError());
 					success = false;
@@ -100,11 +100,16 @@ bool SimXApp::HandleEvents()
 
 		if (m_event.type == SDL_MOUSEBUTTONDOWN) {
 			SDL_GetMouseState(&m_mouseX, &m_mouseY);
+			Particle particle = { Vector2D{(double)m_mouseX, (double)m_mouseY}, Vector2D{10.0,20.0}, 1 };
+			m_particleSim.addParticle(particle);
 		}
 		if (m_event.type == SDL_MOUSEMOTION) {
 			SDL_GetMouseState(&m_mouseX, &m_mouseY);
+			if (m_particleSim.numberOfParticles() >= 1) m_particleSim.setParticleVelocity(m_particleSim.numberOfParticles() - 1, Vector2D{ (double) m_mouseX, (double) m_mouseY } - m_particleSim.getParticlePositions()[m_particleSim.numberOfParticles() - 1]);
 		}
 	}
+
+	m_particleSim.runTick();
 
 	return true;
 }
@@ -157,8 +162,11 @@ void SimXApp::RenderScene() {
 	SDL_DestroyTexture(textTexture);
 
 	// Simulation
-
-
+	std::vector<Vector2D> particlePositions = m_particleSim.getParticlePositions();
+	for (int i = 0; i < particlePositions.size(); i++) {
+		Vector2D particleRenderPoint = SimulationToRenderSpace(particlePositions[i]);
+		SDL_RenderDrawPoint(m_renderer, particleRenderPoint.x, particleRenderPoint.y);
+	}
 
 
 	SDL_RenderPresent(m_renderer);
@@ -166,6 +174,7 @@ void SimXApp::RenderScene() {
 
 void SimXApp::EndFrame()
 {
+	
 	m_avgFramesPerSecond = m_framesElapsed / ((SDL_GetTicks() - m_fpsStartTicks) / 1000.f);
 	if (m_avgFramesPerSecond > 2000000) m_avgFramesPerSecond = 0;
 
@@ -174,4 +183,10 @@ void SimXApp::EndFrame()
 	if (frameTicks < 1000 / TICKS_PER_SECOND) {
 		SDL_Delay(1000 / TICKS_PER_SECOND - frameTicks);
 	}
+}
+
+Vector2D SimXApp::SimulationToRenderSpace(Vector2D simulationPoint)
+{
+	return Vector2D(std::max(0.0, std::min((double)m_screenWidth, simulationPoint.x)),
+		std::max(0.0, std::min((double)m_screenHeight, simulationPoint.y)));
 }

@@ -8,6 +8,8 @@ struct Vector2D {
 	double GetAngleDeg();
 	Vector2D operator+(Vector2D a);
 	void operator+=(Vector2D a);
+	Vector2D operator-(Vector2D a);
+	void operator-=(Vector2D a);
 	Vector2D operator*(double a);
 	double operator*(Vector2D a);
 	Vector2D(double x, double y);
@@ -28,7 +30,10 @@ public:
 
 	void addParticle(Particle particle);
 
-	void getParticlePositions();
+	int numberOfParticles();
+	void setParticleVelocity(int index, Vector2D velocity);
+
+	std::vector<Vector2D> getParticlePositions();
 private:
 	int m_ticksPerSecond;
 
