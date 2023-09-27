@@ -1,7 +1,7 @@
 #include "graphics.h"
 
 Texture::Texture() {
-
+	m_texture = NULL;
 }
 
 Texture::~Texture() {

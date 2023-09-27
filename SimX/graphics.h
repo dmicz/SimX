@@ -9,5 +9,5 @@ class Texture {
 	void render(int x, int y, SDL_Rect* clip = NULL);
 
 private:
-	SDL_Texture* _texture;
+	SDL_Texture* m_texture;
 };

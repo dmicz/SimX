@@ -13,23 +13,25 @@ public:
 
 	bool CreateWindow(int x, int y, int w, int h, Uint32 flags);
 private:
+	const int TICKS_PER_SECOND = 100;
+
 	void StartFrame();
 	bool HandleEvents();
 	void RenderScene();
 	void EndFrame();
 
-	const char* _title;
-	SDL_Window* _window = NULL;
-	SDL_Event _event;
-	SDL_Renderer* _renderer = NULL;
-	TTF_Font* _font;
-	int _screenWidth, _screenHeight;
-	int _mouseX, _mouseY;
+	const char* m_title;
+	SDL_Window* m_window = NULL;
+	SDL_Event m_event;
+	SDL_Renderer* m_renderer = NULL;
+	TTF_Font* m_font;
+	int m_screenWidth, m_screenHeight;
+	int m_mouseX, m_mouseY;
 
-	Uint32 _fpsStartTicks = 0;
-	Uint32 _capStartTicks = 0;
-	int _framesElapsed = 0;
-	double _avgFramesPerSecond = 0;
+	Uint32 m_fpsStartTicks = 0;
+	Uint32 m_capStartTicks = 0;
+	int m_framesElapsed = 0;
+	double m_avgFramesPerSecond = 0;
 
-	ParticleSimulation _particleSim;
+	ParticleSimulation m_particleSim;
 };

@@ -5,10 +5,6 @@
 #include "SimXApp.h"
 #include "physics.h"
 
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
-const int SIMULATION_APS = 100;
-const int SCREEN_TICKS_PER_FRAME = 1000 / SIMULATION_APS;
 
 int main(int argc, char* args[]) {
 	SimXApp application("SimX");
@@ -21,7 +17,7 @@ int main(int argc, char* args[]) {
 			printf("Warning: Linear texture filtering not enabled!");
 		}
 
-		if (!application.CreateWindow(SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN)) {
+		if (!application.CreateWindow(SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_SHOWN)) {
 			printf("SDL couldn't create window, SDL_Error: %s\n", SDL_GetError());
 		}
 		else {

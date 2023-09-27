@@ -9,7 +9,7 @@ struct Vector2D {
 	Vector2D operator+(Vector2D a);
 	void operator+=(Vector2D a);
 	Vector2D operator*(double a);
-	int operator*(Vector2D a);
+	double operator*(Vector2D a);
 	Vector2D(double x, double y);
 	bool operator==(const Vector2D& other) const;
 };
@@ -30,7 +30,7 @@ public:
 
 	void getParticlePositions();
 private:
-	int _ticksPerSecond;
+	int m_ticksPerSecond;
 
-	std::vector<Particle> _particles;
+	std::vector<Particle> m_particles;
 };

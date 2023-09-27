@@ -3,27 +3,28 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-SimXApp::SimXApp(const char* title) : _particleSim(60)
+SimXApp::SimXApp(const char* title) : m_particleSim(60)
 {
-	_screenWidth = NULL;
-	_screenHeight = NULL;
-	_font = NULL;
-	_title = title;
-	_mouseX = 0;
-	_mouseY = 0;
+	m_screenWidth = NULL;
+	m_screenHeight = NULL;
+	m_font = NULL;
+	m_title = title;
+	m_mouseX = 0;
+	m_mouseY = 0;
+	m_event = { };
 }
 
 SimXApp::~SimXApp()
 {
-	TTF_CloseFont(_font);
+	TTF_CloseFont(m_font);
 
-	SDL_DestroyRenderer(_renderer);
-	SDL_DestroyWindow(_window);
+	SDL_DestroyRenderer(m_renderer);
+	SDL_DestroyWindow(m_window);
 }
 
 void SimXApp::Run()
 {
-	_fpsStartTicks = SDL_GetTicks();
+	m_fpsStartTicks = SDL_GetTicks();
 
 	bool quit = false;
 
@@ -45,10 +46,10 @@ bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
 {
 	bool success = true;
 
-	_screenWidth = w;
-	_screenHeight = h;
-	_window = SDL_CreateWindow(_title, x, y, w, h, flags);
-	if (_window == NULL) {
+	m_screenWidth = w;
+	m_screenHeight = h;
+	m_window = SDL_CreateWindow(m_title, x, y, w, h, flags);
+	if (m_window == NULL) {
 		printf("Window not created, SDL error: %s\n", SDL_GetError());
 		success = false;
 	}
@@ -67,19 +68,19 @@ bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
 			}
 			else {
 				SDL_Surface* icon = IMG_Load("simicon.ico");
-				SDL_SetWindowIcon(_window, icon);
-				_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-				if (_renderer == NULL) {
+				SDL_SetWindowIcon(m_window, icon);
+				m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+				if (m_renderer == NULL) {
 					printf("Renderer not created, SDL error: %s\n", SDL_GetError());
 					success = false;
 				}
 				else {
-					_font = TTF_OpenFont("consolab.ttf", 20);
-					if (_font == NULL) {
+					m_font = TTF_OpenFont("consolab.ttf", 20);
+					if (m_font == NULL) {
 						printf("Failed to load consolab.ttf, SDL_ttf error: %s\n", TTF_GetError());
 						success = false;
 					}
-					SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+					SDL_SetRenderDrawColor(m_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
 				}
 			}
 		}
@@ -89,19 +90,19 @@ bool SimXApp::CreateWindow(int x, int y, int w, int h, Uint32 flags)
 
 void SimXApp::StartFrame()
 {
-	_capStartTicks = SDL_GetTicks();
+	m_capStartTicks = SDL_GetTicks();
 }
 
 bool SimXApp::HandleEvents()
 {
-	while (SDL_PollEvent(&_event)) {
-		if (_event.type == SDL_QUIT) return false;
+	while (SDL_PollEvent(&m_event)) {
+		if (m_event.type == SDL_QUIT) return false;
 
-		if (_event.type == SDL_MOUSEBUTTONDOWN) {
-			SDL_GetMouseState(&_mouseX, &_mouseY);
+		if (m_event.type == SDL_MOUSEBUTTONDOWN) {
+			SDL_GetMouseState(&m_mouseX, &m_mouseY);
 		}
-		if (_event.type == SDL_MOUSEMOTION) {
-			SDL_GetMouseState(&_mouseX, &_mouseY);
+		if (m_event.type == SDL_MOUSEMOTION) {
+			SDL_GetMouseState(&m_mouseX, &m_mouseY);
 		}
 	}
 
@@ -111,45 +112,45 @@ bool SimXApp::HandleEvents()
 
 
 void SimXApp::RenderScene() {
-	SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
-	SDL_RenderClear(_renderer);
+	SDL_SetRenderDrawColor(m_renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+	SDL_RenderClear(m_renderer);
 
 	int toolbarHeight = 60;
 
 	// Draw Grid
-	SDL_SetRenderDrawColor(_renderer, 0x11, 0x11, 0x11, SDL_ALPHA_OPAQUE);
-	for (int i = 0; i < _screenWidth; i += 20) {
-		SDL_RenderDrawLine(_renderer, i, toolbarHeight, i, _screenHeight);
+	SDL_SetRenderDrawColor(m_renderer, 0x11, 0x11, 0x11, SDL_ALPHA_OPAQUE);
+	for (int i = 0; i < m_screenWidth; i += 20) {
+		SDL_RenderDrawLine(m_renderer, i, toolbarHeight, i, m_screenHeight);
 	}
-	for (int i = toolbarHeight; i < _screenHeight; i += 20) {
-		SDL_RenderDrawLine(_renderer, 0, i, _screenWidth, i);
+	for (int i = toolbarHeight; i < m_screenHeight; i += 20) {
+		SDL_RenderDrawLine(m_renderer, 0, i, m_screenWidth, i);
 	}
 
 	// Draw simulation tabs
-	SDL_SetRenderDrawColor(_renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
-	SDL_RenderDrawLine(_renderer, 0, toolbarHeight, _screenWidth, toolbarHeight);
+	SDL_SetRenderDrawColor(m_renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLine(m_renderer, 0, toolbarHeight, m_screenWidth, toolbarHeight);
 
 	int initialOffset = 10, tabWidth = 200, tabHeight = 50, cornerRadius = 5;
 
-	SDL_Surface* textSurface = TTF_RenderText_Blended(_font, "Particle", SDL_Color(0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE));
-	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+	SDL_Surface* textSurface = TTF_RenderText_Blended(m_font, "Particle", SDL_Color(0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE));
+	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(m_renderer, textSurface);
 	int textWidth = textSurface->w;
 	int textHeight = textSurface->h;
 	int textPadding = 10;
 	SDL_Rect renderQuad = { initialOffset + textPadding,
 							toolbarHeight - (textPadding + textHeight),
 							textWidth, textHeight };
-	SDL_RenderCopy(_renderer, textTexture, NULL, &renderQuad);
+	SDL_RenderCopy(m_renderer, textTexture, NULL, &renderQuad);
 
 	tabWidth = textWidth + 20;
 	tabHeight = textHeight + 20;
 
 
-	SDL_RenderDrawLine(_renderer, initialOffset, toolbarHeight, initialOffset, toolbarHeight - (tabHeight - cornerRadius));
-	SDL_RenderDrawLine(_renderer, tabWidth + initialOffset, toolbarHeight, tabWidth + initialOffset, toolbarHeight - (tabHeight - cornerRadius));
-	SDL_RenderDrawLine(_renderer, initialOffset + cornerRadius, toolbarHeight - tabHeight, tabWidth + initialOffset - cornerRadius, toolbarHeight - tabHeight);
-	SDL_RenderDrawLine(_renderer, initialOffset, toolbarHeight - (tabHeight - cornerRadius), initialOffset + cornerRadius, toolbarHeight - tabHeight);
-	SDL_RenderDrawLine(_renderer, tabWidth + initialOffset - cornerRadius, toolbarHeight - tabHeight, tabWidth + initialOffset, toolbarHeight - (tabHeight - cornerRadius));
+	SDL_RenderDrawLine(m_renderer, initialOffset, toolbarHeight, initialOffset, toolbarHeight - (tabHeight - cornerRadius));
+	SDL_RenderDrawLine(m_renderer, tabWidth + initialOffset, toolbarHeight, tabWidth + initialOffset, toolbarHeight - (tabHeight - cornerRadius));
+	SDL_RenderDrawLine(m_renderer, initialOffset + cornerRadius, toolbarHeight - tabHeight, tabWidth + initialOffset - cornerRadius, toolbarHeight - tabHeight);
+	SDL_RenderDrawLine(m_renderer, initialOffset, toolbarHeight - (tabHeight - cornerRadius), initialOffset + cornerRadius, toolbarHeight - tabHeight);
+	SDL_RenderDrawLine(m_renderer, tabWidth + initialOffset - cornerRadius, toolbarHeight - tabHeight, tabWidth + initialOffset, toolbarHeight - (tabHeight - cornerRadius));
 
 
 	SDL_FreeSurface(textSurface);
@@ -160,17 +161,17 @@ void SimXApp::RenderScene() {
 
 
 
-	SDL_RenderPresent(_renderer);
+	SDL_RenderPresent(m_renderer);
 }
 
 void SimXApp::EndFrame()
 {
-	_avgFramesPerSecond = _framesElapsed / ((SDL_GetTicks() - _fpsStartTicks) / 1000.f);
-	if (_avgFramesPerSecond > 2000000) _avgFramesPerSecond = 0;
+	m_avgFramesPerSecond = m_framesElapsed / ((SDL_GetTicks() - m_fpsStartTicks) / 1000.f);
+	if (m_avgFramesPerSecond > 2000000) m_avgFramesPerSecond = 0;
 
-	_framesElapsed++;
-	int frameTicks = (SDL_GetTicks() - _capStartTicks);
-	if (frameTicks < 10) {
-		SDL_Delay(10 - frameTicks);
+	m_framesElapsed++;
+	int frameTicks = (SDL_GetTicks() - m_capStartTicks);
+	if (frameTicks < 1000 / TICKS_PER_SECOND) {
+		SDL_Delay(1000 / TICKS_PER_SECOND - frameTicks);
 	}
 }

@@ -4,12 +4,12 @@
 #include <numbers>
 
 ParticleSimulation::ParticleSimulation(int ticksPerSecond) {
-	_ticksPerSecond = ticksPerSecond;
+	m_ticksPerSecond = ticksPerSecond;
 }
 
 void ParticleSimulation::runTick() {
-	for (int i = 0; i < _particles.size(); i++) {
-		_particles[i].position += _particles[i].velocity * (1.0 / _ticksPerSecond);
+	for (int i = 0; i < m_particles.size(); i++) {
+		m_particles[i].position += m_particles[i].velocity * (1.0 / m_ticksPerSecond);
 	}
 }
 
@@ -20,13 +20,13 @@ void ParticleSimulation::runTicks(int ticks) {
 }
 
 void ParticleSimulation::addParticle(Particle particle) {
-	_particles.push_back(particle);
+	m_particles.push_back(particle);
 }
 
 void ParticleSimulation::getParticlePositions() {
 	std::vector<Vector2D> positions;
-	for (int i = 0; i < _particles.size(); i++) {
-		positions.push_back(_particles[i].position);
+	for (int i = 0; i < m_particles.size(); i++) {
+		positions.push_back(m_particles[i].position);
 	}
 }
 
@@ -56,7 +56,7 @@ Vector2D Vector2D::operator*(double a)
 	return Vector2D(x * a, y * a);
 }
 
-int Vector2D::operator*(Vector2D a)
+double Vector2D::operator*(Vector2D a)
 {
 	return (x * a.x + y * a.y);
 }
